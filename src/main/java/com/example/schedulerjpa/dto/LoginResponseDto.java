@@ -1,15 +1,17 @@
 package com.example.schedulerjpa.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class LoginResponseDto {
-    private Long memberId;
+    private Long id;
     private String email;
     private String message;
 
-    public LoginResponseDto(Long memberId, String email, String message) {
-        this.memberId = memberId;
+    public LoginResponseDto(Long id, String email, String message) {
+        this.id = id;
         this.email = email;
         this.message = message;
     }

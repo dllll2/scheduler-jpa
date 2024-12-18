@@ -29,4 +29,16 @@ public class Todo extends BaseEntity{
         this.title = title;
         this.contents = contents;
     }
+
+    public void setMember(Member member){
+        this.member = member;
+    }
+
+    public void updateTitleById(String title) {
+        this.title = title;
+    }
+
+    public void updateContentById(String contents){
+        this.contents = contents;
+    }
 }

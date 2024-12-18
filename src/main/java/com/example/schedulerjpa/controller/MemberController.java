@@ -1,10 +1,9 @@
 package com.example.schedulerjpa.controller;
 
-import com.example.schedulerjpa.dto.MemberResponseDto;
-import com.example.schedulerjpa.dto.SignUpRequestDto;
-import com.example.schedulerjpa.dto.SignUpResponseDto;
-import com.example.schedulerjpa.dto.UpdatePasswordRequestDto;
+import com.example.schedulerjpa.dto.*;
 import com.example.schedulerjpa.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,14 @@ public class MemberController {
                         requestDto.getEmail()
                 );
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(signUpResponseDto,HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletRequest request, HttpServletResponse response){
+        LoginResponseDto loginResponseDto = memberService.login(requestDto, request, response);
+
+        return new ResponseEntity<>(loginResponseDto,HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
