@@ -17,7 +17,6 @@ public class AuthFilter implements Filter {
 
         String uri = httpRequest.getRequestURI();
 
-        // 로그인, 로그아웃, 회원가입 요청은 필터 제외
         if (uri.contains("/members/login") || uri.contains("/members/signup")) {
             chain.doFilter(request, response);
             return;
@@ -34,6 +33,6 @@ public class AuthFilter implements Filter {
 
     @Override
     public void destroy() {
-        // 필요시 종료 로직 추가
+
     }
 }
