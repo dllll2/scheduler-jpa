@@ -57,7 +57,7 @@ public class TodoController {
             @RequestParam(defaultValue = "0") int page,    // 페이지 번호
             @RequestParam(defaultValue = "10") int size    // 페이지 크기
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page - 1 , size);
         return todoService.getTodosWithPaging(pageable);
     }
 
