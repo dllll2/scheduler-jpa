@@ -8,11 +8,11 @@ import com.example.schedulerjpa.repository.MemberRepository;
 import com.example.schedulerjpa.repository.TodoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +30,14 @@ public class TodoService {
 
     }
 
-    public List<TodoResponseDto> findAll() {
-        return todoRepository.findAll()
-                .stream()
-                .map(TodoResponseDto::toDto)
-                .toList();
+    public Page<TodoResponseDto> findAll(Pageable pageable) {
+        return todoRepository.findAllByOrderByModifiedAtDesc(pageable)
+                .map(TodoResponseDto::toDto);
     }
+
+
+
+
 
     public TodoWithNameResponseDto findById(Long id) {
         Todo findTodo = todoRepository.findByIdOrElseThrow(id);

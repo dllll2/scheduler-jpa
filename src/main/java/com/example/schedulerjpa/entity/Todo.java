@@ -22,6 +22,9 @@ public class Todo extends BaseEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column
+    private Integer commentCount = 0;
+
     public Todo() {
     }
 
