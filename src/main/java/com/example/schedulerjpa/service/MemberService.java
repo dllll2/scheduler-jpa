@@ -74,11 +74,11 @@ public class MemberService {
 
             Member findMember = memberRepository.findByIdOrElseThrow(id);
 
-            if (!findMember.getPassword().equals(oldPassword)) {
+            if (!passwordEncoder.matches(oldPassword, findMember.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
             }
 
-            findMember.updatePassword(newPassword);
+            findMember.updatePassword(passwordEncoder.encode(newPassword));
 
         }
 
