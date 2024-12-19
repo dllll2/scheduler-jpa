@@ -1,5 +1,6 @@
 package com.example.schedulerjpa.service;
 
+import com.example.schedulerjpa.config.PasswordEncoder;
 import com.example.schedulerjpa.dto.LoginRequestDto;
 import com.example.schedulerjpa.dto.LoginResponseDto;
 import com.example.schedulerjpa.dto.MemberResponseDto;
@@ -23,11 +24,12 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public SignUpResponseDto signUp(String name, String password, String email) {
-        Member member = new Member(name, password, email);
-
+        String encodedPassword = passwordEncoder.encode(password);
+        Member member = new Member(name, encodedPassword, email);
         Member savedMember = memberRepository.save(member);
 
         return new SignUpResponseDto(savedMember.getId(), savedMember.getName(), savedMember.getEmail());
@@ -37,7 +39,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."));
 
-        if (!member.getPassword().equals(requestDto.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
