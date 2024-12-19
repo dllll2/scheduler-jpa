@@ -13,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/todos")
@@ -44,13 +46,19 @@ public class TodoController {
     }
 
     @GetMapping
-    public Page<TodoResponseDto> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ){
-        Pageable pageable = PageRequest.of(page,size);
+    public ResponseEntity<List<TodoResponseDto>> findAll(){
+        List<TodoResponseDto> todoResponseDtoList = todoService.findAll();
 
-        return (Page<TodoResponseDto>) todoService.findAll(pageable);
+        return new ResponseEntity<>(todoResponseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/todos")
+    public Page<TodoPageDto> getTodos(
+            @RequestParam(defaultValue = "0") int page,    // 페이지 번호
+            @RequestParam(defaultValue = "10") int size    // 페이지 크기
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return todoService.getTodosWithPaging(pageable);
     }
 
     @GetMapping("/{id}")
@@ -91,7 +99,6 @@ public class TodoController {
             log.info("validation errors={}", bindingResult);
             return (ResponseEntity<UpdateContentRequestDto>) bindingResult.getAllErrors();
         }
-
         todoService.updateContentById(id, requestDto.getOldContent(), requestDto.getNewContent());
 
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,5 +1,6 @@
 package com.example.schedulerjpa.service;
 
+import com.example.schedulerjpa.dto.TodoPageDto;
 import com.example.schedulerjpa.dto.TodoResponseDto;
 import com.example.schedulerjpa.dto.TodoWithNameResponseDto;
 import com.example.schedulerjpa.entity.Member;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +33,16 @@ public class TodoService {
 
     }
 
-    public Page<TodoResponseDto> findAll(Pageable pageable) {
-        return todoRepository.findAllByOrderByModifiedAtDesc(pageable)
-                .map(TodoResponseDto::toDto);
+    public List<TodoResponseDto> findAll() {
+        return todoRepository.findAll()
+                .stream()
+                .map(TodoResponseDto::toDto)
+                .toList();
     }
 
-
-
-
+    public Page<TodoPageDto> getTodosWithPaging(Pageable pageable) {
+        return todoRepository.findAllWithCommentCount(pageable);
+    }
 
     public TodoWithNameResponseDto findById(Long id) {
         Todo findTodo = todoRepository.findByIdOrElseThrow(id);
