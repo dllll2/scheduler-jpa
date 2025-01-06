@@ -1,5 +1,7 @@
 package com.example.schedulerjpa.service;
 
+import com.example.schedulerjpa.config.error.ErrorCode;
+import com.example.schedulerjpa.config.error.exception.CommentNotFoundException;
 import com.example.schedulerjpa.dto.CommentRequestDto;
 import com.example.schedulerjpa.dto.CommentResponseDto;
 import com.example.schedulerjpa.entity.Comment;
@@ -53,7 +55,7 @@ public class CommentService {
 
     public CommentResponseDto update(Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CommentNotFoundException(ErrorCode.COMMENT_NOT_FOUND));
         comment.update(requestDto.getContents());
 
         return new CommentResponseDto(

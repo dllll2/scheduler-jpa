@@ -1,5 +1,7 @@
 package com.example.schedulerjpa.service;
 
+import com.example.schedulerjpa.config.error.ErrorCode;
+import com.example.schedulerjpa.config.error.exception.base.BusinessBaseException;
 import com.example.schedulerjpa.dto.TodoPageDto;
 import com.example.schedulerjpa.dto.TodoResponseDto;
 import com.example.schedulerjpa.dto.TodoWithNameResponseDto;
@@ -11,9 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class TodoService {
         Todo findTodo = todoRepository.findByIdOrElseThrow(id);
 
         if (!findTodo.getTitle().equals(oldTitle)) { // 제목이 수정되지 않은 경우
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정된 제목이 기존 제목과 동일합니다.");
+            throw new BusinessBaseException(ErrorCode.TITLE_ALREADY_EXISTS);
         }
 
         findTodo.updateTitleById(newTitle);
@@ -68,7 +68,7 @@ public class TodoService {
         Todo findTodo = todoRepository.findByIdOrElseThrow(id);
 
         if (!findTodo.getContents().equals(oldContent)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정된 내용이 기존 내용과 동일합니다.");
+            throw new BusinessBaseException(ErrorCode.CONTENT_ALREADY_EXISTS);
         }
 
         findTodo.updateContentById(newContent);

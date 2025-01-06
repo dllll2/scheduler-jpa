@@ -1,6 +1,9 @@
 package com.example.schedulerjpa.service;
 
 import com.example.schedulerjpa.config.PasswordEncoder;
+import com.example.schedulerjpa.config.error.ErrorCode;
+import com.example.schedulerjpa.config.error.exception.AuthenticationException;
+import com.example.schedulerjpa.config.error.exception.base.NotFoundException;
 import com.example.schedulerjpa.dto.LoginRequestDto;
 import com.example.schedulerjpa.dto.LoginResponseDto;
 import com.example.schedulerjpa.dto.MemberResponseDto;
@@ -13,9 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -37,10 +38,10 @@ public class MemberService {
 
     public LoginResponseDto login(LoginRequestDto requestDto, HttpServletRequest request, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILURE));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILURE);
         }
 
         // 세션 설정
@@ -61,7 +62,7 @@ public class MemberService {
             Optional<Member> optionalMember = memberRepository.findById(id);
 
             if (optionalMember.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id : " + id);
+                throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
             }
 
             Member findMember = optionalMember.get();
@@ -75,7 +76,7 @@ public class MemberService {
             Member findMember = memberRepository.findByIdOrElseThrow(id);
 
             if (!passwordEncoder.matches(oldPassword, findMember.getPassword())) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+                throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILURE);
             }
 
             findMember.updatePassword(passwordEncoder.encode(newPassword));
